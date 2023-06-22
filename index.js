@@ -48,7 +48,7 @@ response.send(
 
 app.get('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id)
-  const note = persons.find(person =>  person.id === id)
+  const person = persons.find(person =>  person.id === id)
 
   if (person) {
     response.json(person)
@@ -59,27 +59,35 @@ app.get('/api/persons/:id', (request, response) => {
 
 app.delete('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id)
-  persons = notes.filter(p => p.id !== id)
+  persons = persons.filter(p => p.id !== id)
 
   response.status(204).end()
 })
 
 const generateId = () => {
-  const maxId = persons.length > 0 ? Math.max(...notes.map(n => n.id)) : 0
+  const maxId = persons.length > 0 ? Math.max(...persons.map(n => n.id)) : 0
   return maxId + 1
 }
 
 app.post('/api/persons', (request,response) => {
 const body = request.body
 
-if (!body.content) {
+if (!body.name || !body.number) {
   return response.status(400).json({
-  error: 'content missing'
+  error: 'contact information is missing'
   })
 }
+
+const existingNames = persons.map(p => p.name)
+if (existingNames.includes(body.name)) {
+    return response.status(400).json({
+        error: 'name must be unique'
+        })
+      }
+
   const person = {
     id:generateId(),
-    name: body.content,
+    name: body.name,
     number: body.number
     
   }
