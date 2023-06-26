@@ -9,7 +9,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:ui": "rm -rf build && cd /Users/jakub.osuchowski/Documents/GitHub/fullstackopen/part2/phonebook && npm run build && cp -r build /Users/jakub.osuchowski/Documents/GitHub/part3exercises/part3backend/phonebook-backend",
     "deploy": "fly deploy",
-    "deploy:full": "npm run build:ui && npm run deploy",    
+    "deploy:full": "npm run build:ui && npm run deploy",
     "logs:prod": "fly logs"
   },
   "repository": {
@@ -29,6 +29,7 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.18.2",
+    "mongoose": "^7.3.1",
     "morgan": "^1.10.0"
   }
 }
