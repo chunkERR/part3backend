@@ -9,15 +9,15 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:ui": "rm -rf build && cd /Users/jakub.osuchowski/Documents/GitHub/fullstackopen/part2/rendering && npm run build && cp -r build /Users/jakub.osuchowski/Documents/GitHub/part3exercises/part3backend/notes-backend",
     "deploy": "fly deploy",
-    "deploy:full": "npm run build:ui && npm run deploy",    
+    "deploy:full": "npm run build:ui && npm run deploy",
     "logs:prod": "fly logs"
-
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "mongoose": "^7.3.1"
   },
   "devDependencies": {
     "@flydotio/dockerfile": "^0.2.16",
