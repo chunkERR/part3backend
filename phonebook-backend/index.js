@@ -51,11 +51,17 @@ app.get('/api/persons/:id', (request, response) => {
 
 
 app.delete('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  persons = persons.filter(p => p.id !== id)
+  const id = request.params.id;
+  Person.findByIdAndRemove(id)
+    .then(() => {
+      response.status(204).end();
+    })
+    .catch(error => {
+      console.error('Error deleting person:', error);
+      response.status(500).json({ error: 'Server error' });
+    });
+});
 
-  response.status(204).end()
-})
 
 
 app.post('/api/persons', (request, response) => {
