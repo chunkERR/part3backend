@@ -14,10 +14,6 @@ app.use(cors())
 
 morgan.token('data', (req, res) => JSON.stringify(req.body))
 
-let persons = [
-
-]
-
 app.get('/api/persons', (request, response) => {
   Person.find({}).
   then(persons => {
@@ -38,15 +34,21 @@ response.send(
 
 
 app.get('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  const person = persons.find(person =>  person.id === id)
+  const id = request.params.id;
+  Person.findById(id)
+    .then(person => {
+      if (person) {
+        response.json(person);
+      } else {
+        response.status(404).end();
+      }
+    })
+    .catch(error => {
+      console.error('Error retrieving person:', error);
+      response.status(500).json({ error: 'Server error' });
+    });
+});
 
-  if (person) {
-    response.json(person)
-  } else {
-    response.status(404).end()
-  }
-})
 
 app.delete('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id)
@@ -56,36 +58,43 @@ app.delete('/api/persons/:id', (request, response) => {
 })
 
 
-app.post('/api/persons', (request,response) => {
-const body = request.body
+app.post('/api/persons', (request, response) => {
+  const body = request.body;
 
-if (!body.name || !body.number) {
-  return response.status(400).json({
-  error: 'contact information is missing'
-  })
-}
-
-const existingNames = persons.map(p => p.name)
-if (existingNames.includes(body.name)) {
+  if (!body.name || !body.number) {
     return response.status(400).json({
-        error: 'name must be unique'
-        })
+      error: 'Contact information is missing',
+    });
+  }
+
+  Person.findOne({ name: body.name })
+    .then(existingPerson => {
+      if (existingPerson) {
+        return response.status(400).json({
+          error: 'Name must be unique',
+        });
       }
 
       const person = new Person({
         name: body.name,
-        number: body.number
-      })
+        number: body.number,
+      });
 
       person.save().then(savedPerson => {
-        response.json(savedPerson)
-      })
-})
+        response.json(savedPerson);
+      });
+    })
+    .catch(error => {
+      console.error('Error saving person:', error);
+      response.status(500).json({ error: 'Server error' });
+    });
+});
 
 
-app.get('/api/notes/:id', (request, response) => {
-  Note.findById(request.params.id).then(note => {
-    response.json(note)
+
+app.get('/api/persons/:id', (request, response) => {
+  Person.findById(request.params.id).then(person => {
+    response.json(person)
   })
 })
 
@@ -105,7 +114,7 @@ const requestLogger = (request, response, next) => {
   
   app.use(unknownEndpoint)
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
