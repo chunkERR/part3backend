@@ -115,13 +115,24 @@ app.post('/api/persons', (request, response) => {
     });
 
 
+    app.put('/api/persons/:id', (request, response, next) => {
+      const body = request.body
+    
+      const person = {
+        name: body.name,
+        number: body.number,
+      }
+      
+      Person.findOne({name: request.name})
+      .then(Person.findByIdAndUpdate(request.params.id, person)
+      .then(updatedPerson => {
+        response.json(updatedPerson)
+      })
+      .catch(error => next(error)))
 
+    
 
-app.get('/api/persons/:id', (request, response) => {
-  Person.findById(request.params.id).then(person => {
-    response.json(person)
-  })
-})
+    })
 
 app.use(unknownEndpoint)
 app.use(errorHandler)
