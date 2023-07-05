@@ -1,0 +1,9 @@
+PUT http://localhost:3001/api/notes/649c8e7c53cde1837071a0e0
+
+Content-Type: application/json
+
+{
+    "content": "OK computer",
+        "important": true
+
+}
