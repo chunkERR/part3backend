@@ -10,7 +10,8 @@
     "build:ui": "rm -rf build && cd /Users/jakub.osuchowski/Documents/GitHub/fullstackopen/part2/rendering && npm run build && cp -r build /Users/jakub.osuchowski/Documents/GitHub/part3exercises/part3backend/notes-backend",
     "deploy": "fly deploy",
     "deploy:full": "npm run build:ui && npm run deploy",
-    "logs:prod": "fly logs"
+    "logs:prod": "fly logs",
+    "lint": "eslint ."
   },
   "author": "",
   "license": "ISC",
@@ -22,6 +23,8 @@
   },
   "devDependencies": {
     "@flydotio/dockerfile": "^0.2.16",
+    "eslint": "^8.44.0",
+    "eslint-plugin-react": "^7.32.2",
     "nodemon": "^2.0.22"
   }
 }

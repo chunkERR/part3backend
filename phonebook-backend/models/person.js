@@ -21,7 +21,6 @@ mongoose.connect(url)
     name: {
         type: String,
         minLength: 3,
-        required: true,
       },
     number: String,
   })
