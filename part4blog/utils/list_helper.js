@@ -23,7 +23,7 @@ const favoriteBlog = (blogs) => {
 
 const mostBlogs = (blogs) => {
   const topAuthor = _.head(_(blogs).countBy("author").entries().maxBy(_.last));
-  return `${topAuthor} ${topAuthor}`;
+  return `${topAuthor}`;
 };
 
 module.exports = {
