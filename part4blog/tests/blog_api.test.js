@@ -4,8 +4,17 @@ const app = require('../app')
 
 const api = supertest(app)
 
-const Note = require('../models/note')
+const Blog = require('../models/blog')
 const helper = require('./test_helper')
+
+const initialBlogs = [  
+  {    
+  content: 'HTML is easy',    
+  important: false,  },  
+  {    
+  content: 'Browser can execute only JavaScript',   
+  important: true,  },
+]
 
 beforeEach(async () => {
   await Note.deleteMany({})
