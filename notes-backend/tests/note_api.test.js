@@ -1,13 +1,17 @@
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
-
 const api = supertest(app)
+const connectdb = require('../app')
 
 const Note = require('../models/note')
+
 const helper = require('./test_helper')
 
+jest.setTimeout(600000)
+
 beforeEach(async () => {
+  await connectdb
   await Note.deleteMany({})
   await Note.insertMany(helper.initialNotes)
 })

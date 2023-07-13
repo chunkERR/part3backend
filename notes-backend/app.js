@@ -12,7 +12,9 @@ mongoose.set("strictQuery", false);
 
 logger.info("connecting to", config.MONGODB_URI);
 
-mongoose
+
+const connectDB = async () => {
+ await mongoose
   .connect(config.MONGODB_URI)
   .then(() => {
     logger.info("connected to MongoDB");
@@ -20,6 +22,8 @@ mongoose
   .catch((error) => {
     logger.error("error connecting to MongoDB:", error.message);
   });
+
+}
 
 app.use(cors());
 app.use(express.static("build"));
@@ -31,4 +35,4 @@ app.use("/api/notes", notesRouter);
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);
 
-module.exports = app;
+module.exports = app, connectDB;
