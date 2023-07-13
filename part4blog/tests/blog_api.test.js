@@ -7,34 +7,26 @@ const api = supertest(app)
 const Blog = require('../models/blog')
 const helper = require('./test_helper')
 
-const initialBlogs = [  
-  {    
-  content: 'HTML is easy',    
-  important: false,  },  
-  {    
-  content: 'Browser can execute only JavaScript',   
-  important: true,  },
-]
 
 beforeEach(async () => {
-  await Note.deleteMany({})
+  await Blog.deleteMany({})
 
-  const noteObjects = helper.initialNotes
-    .map(note => new Note(note))
-  const promiseArray = noteObjects.map(note => note.save())
+  const blogObjects = helper.initialBlogs
+    .map(blog => new Blog(blog))
+  const promiseArray = blogObjects.map(blog => blog.save())
   await Promise.all(promiseArray)
 })
 
-helper. initialNotes.forEach(async (note) => {
-  let noteObject = new Note(note)
-  await noteObject.save()
+helper. initialBlogs.forEach(async (blog) => {
+  let blogObject = new Blog(note)
+  await blogObject.save()
   console.log('saved')
 })
 
-test('notes are returned as json', async () => {
+test('blogs are returned as json', async () => {
   console.log('entered test')
   await api
-    .get('/api/notes')
+    .get('/api/blogs')
     .expect(200)
     .expect('Content-Type', /application\/json/)
 })
@@ -42,90 +34,91 @@ test('notes are returned as json', async () => {
 
 
 
-test('all notes are returned', async () => {
-  const response = await api.get('/api/notes')
+test('all blogs are returned', async () => {
+  const response = await api.get('/api/blogs')
 
-  expect(response.body).toHaveLength(helper.initialNotes.length)
+  expect(response.body).toHaveLength(helper.initialBlogs.length)
 })
 
 test('a specific note is within the returned notes', async () => {
-  const response = await api.get('/api/notes')
+  const response = await api.get('/api/blogs')
 
   const contents = response.body.map(r => r.content)
 
   expect(contents).toContain(
-    'Browser can execute only JavaScript'
+    'HTML is easy'
   )
 })
 
 test('a valid note can be added ', async () => {
-  const newNote = {
-    content: 'async/await simplifies making async calls',
-    important: true,
+  const newBlog = {
+    title: 'async/await simplifies making async calls',    
+    author: "Martynka",
+    url: "haha.com",
+    likes: 1000
   }
 
   await api
-    .post('/api/notes')
-    .send(newNote)
+    .post('/api/blogs')
+    .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/)
 
-  const notesAtEnd = await helper.notesInDb()
-  expect(notesAtEnd).toHaveLength(helper.initialNotes.length + 1)
+  const blogsAtEnd = await helper.blogsInDb()
+  expect(blogsAtEnd).toHaveLength(helper.initialNotes.length + 1)
 
-  const contents = notesAtEnd.map(n => n.content)
+  const contents = blogsAtEnd.map(b => b.content)
   expect(contents).toContain(
     'async/await simplifies making async calls'
   )
 })
 
-test('note without content is not added', async () => {
-  const newNote = {
-    important: true
+test('blog without content is not added', async () => {
+  const newBlog = {
   }
 
   await api
-    .post('/api/notes')
-    .send(newNote)
+    .post('/api/blogs')
+    .send(newBlog)
     .expect(400)
 
-  const notesAtEnd = await helper.notesInDb()
+  const blogsAtEnd = await helper.blogsInDb()
 
-  expect(notesAtEnd).toHaveLength(helper.initialNotes.length)
+  expect(blogsAtEnd).toHaveLength(helper.initialNotes.length)
 })
 
 test('a specific note can be viewed', async () => {
-  const notesAtStart = await helper.notesInDb()
+  const blogsAtStart = await helper.blogsInDb()
 
-  const noteToView = notesAtStart[0]
+  const blogToView = blogsAtStart[0]
 
-  const resultNote = await api
-    .get(`/api/notes/${noteToView.id}`)
+  const resultBlog = await api
+    .get(`/api/blogs/${blogToView.id}`)
     .expect(200)
     .expect('Content-Type', /application\/json/)
 
   //const processedNoteToView = JSON.parse(JSON.stringify(noteToView))
 
-  expect(resultNote.body).toEqual(noteToView)
+  expect(resultBlog.body).toEqual(blogToView)
 })
 
 test('a note can be deleted', async () => {
-  const notesAtStart = await helper.notesInDb()
-  const noteToDelete = notesAtStart[0]
+  const blogsAtStart = await helper.blogsInDb()
+  const blogToDelete = blogsAtStart[0]
 
   await api
-    .delete(`/api/notes/${noteToDelete.id}`)
+    .delete(`/api/notes/${blogToDelete.id}`)
     .expect(204)
 
-  const notesAtEnd = await helper.notesInDb()
+  const blogsAtEnd = await helper.blogsInDb()
 
-  expect(notesAtEnd).toHaveLength(
-    helper.initialNotes.length - 1
+  expect(blogsAtEnd).toHaveLength(
+    helper.initialBlogs.length - 1
   )
 
-  const contents = notesAtEnd.map(r => r.content)
+  const contents = blogsAtEnd.map(r => r.content)
 
-  expect(contents).not.toContain(noteToDelete.content)
+  expect(contents).not.toContain(blogToDelete.content)
 })
 
 afterAll(async () => {
