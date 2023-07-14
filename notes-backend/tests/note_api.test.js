@@ -6,12 +6,16 @@ const api = supertest(app)
 
 const Note = require('../models/note')
 const helper = require('./test_helper')
+const config = require('../utils/config')
 
 jest.setTimeout(300000)
 
-beforeEach(async () => {
-  await Note.deleteMany({})
+const url = config.MONGODB_URI
 
+beforeEach(async () => {
+  await app.connectdB()
+  await mongoose.connect(url)
+  await Note.deleteMany({})
   const noteObjects = helper.initialNotes
     .map(note => new Note(note))
   const promiseArray = noteObjects.map(note => note.save())
