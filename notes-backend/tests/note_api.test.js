@@ -6,20 +6,12 @@ const api = supertest(app)
 
 const Note = require('../models/note')
 const helper = require('./test_helper')
-const config = require('../utils/config')
 
-jest.setTimeout(300000)
-
-const url = config.MONGODB_URI
+mongoose.set("bufferTimeoutMS", 30000)
 
 beforeEach(async () => {
-  await app.connectdB()
-  await mongoose.connect(url)
   await Note.deleteMany({})
-  const noteObjects = helper.initialNotes
-    .map(note => new Note(note))
-  const promiseArray = noteObjects.map(note => note.save())
-  await Promise.all(promiseArray)
+  await Note.insertMany(helper.initialNotes)
 })
 
 test('notes are returned as json', async () => {
@@ -27,7 +19,7 @@ test('notes are returned as json', async () => {
     .get('/api/notes')
     .expect(200)
     .expect('Content-Type', /application\/json/)
-})
+}, 100000)
 
 test('all notes are returned', async () => {
   const response = await api.get('/api/notes')

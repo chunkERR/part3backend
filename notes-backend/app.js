@@ -13,8 +13,7 @@ mongoose.set('strictQuery', false)
 
 logger.info('connecting to', config.MONGODB_URI)
 
-const connectDb = async () => {
-  mongoose.connect(config.MONGODB_URI)
+mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true } )
   .then(() => {
     logger.info('connected to MongoDB')
   })
@@ -22,7 +21,7 @@ const connectDb = async () => {
     logger.error('error connecting to MongoDB:', error.message)
   })
 
-}
+
 
 app.use(cors())
 app.use(express.static('build'))
@@ -34,4 +33,4 @@ app.use('/api/notes', notesRouter)
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
 
-module.exports = app, connectDb()
+module.exports = app
