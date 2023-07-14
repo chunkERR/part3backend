@@ -7,12 +7,15 @@ const api = supertest(app)
 const Note = require('../models/note')
 const helper = require('./test_helper')
 
-mongoose.set("bufferTimeoutMS", 600000)
+jest.setTimeout(300000)
 
 beforeEach(async () => {
-  jest.setTimeout(600000)
   await Note.deleteMany({})
-  await Note.insertMany(helper.initialNotes)
+
+  const noteObjects = helper.initialNotes
+    .map(note => new Note(note))
+  const promiseArray = noteObjects.map(note => note.save())
+  await Promise.all(promiseArray)
 })
 
 test('notes are returned as json', async () => {
