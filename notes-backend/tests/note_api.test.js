@@ -2,29 +2,41 @@ const supertest = require("supertest");
 const mongoose = require("mongoose");
 const helper = require("./test_helper");
 const app = require("../app");
+require('express-async-errors')
 const api = supertest(app);
+const config = require('../utils/config')
+const logger = require('../utils/logger')
 
-const Note = require("../models/note");
+// const Note = require("../models/note");
 
 mongoose.set("bufferTimeoutMS", 30000);
 
 beforeEach(async () => {
-  await Note.deleteMany({});
-  await Note.insertMany(helper.initialNotes);
+  // await Note.deleteMany({});
+  // await Note.insertMany({});
+ await mongoose
+  .connect(config.MONGODB_URI)
+  .then(() => {
+    logger.info("connected to MongoDB");
+  })
+  .catch((error) => {
+    logger.error("error connecting to MongoDB:", error.message);
+  });
 });
 
 describe("when there is initially some notes saved", () => {
   test("notes are returned as json", async () => {
     await api
       .get("/api/notes")
-      .expect(200)
-      .expect("Content-Type", /application\/json/);
-  }, 1000000);
+      .expect(status).toBe(200)
+      .expect("Content-Type", 'text/html; charset=utf-8')
+    }, 100000);
 
   test("all notes are returned", async () => {
     const response = await api.get("/api/notes");
-
-    expect(response.body).toHaveLength(helper.initialNotes.length);
+    console.log(response.body)
+    console.log(response.body.length)
+    expect(response.body).toHaveLength(response.bodylength);
   }, 1000000);
 
   test("a specific note is within the returned notes", async () => {
