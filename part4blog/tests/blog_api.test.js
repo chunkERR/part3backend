@@ -11,9 +11,7 @@ const helper = require('./test_helper')
 mongoose.set("bufferTimeoutMS", 30000);
 jest.setTimeout(10000); // 10 second timeout
 
-beforeAll(async () => {
-  
-  await mongoose.disconnect();
+beforeAll(async () => {  
   await mongoose.connect(config.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
