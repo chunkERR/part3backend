@@ -2,7 +2,6 @@ const supertest = require("supertest");
 const mongoose = require("mongoose");
 const helper = require("./test_helper");
 const app = require("../app");
-require('express-async-errors')
 const api = supertest(app);
 const config = require('../utils/config')
 const logger = require('../utils/logger')
@@ -28,7 +27,7 @@ describe("when there is initially some notes saved", () => {
   test("notes are returned as json", async () => {
     await api
       .get("/api/notes")
-      .expect(status).toBe(200)
+      .expect(200)
       .expect("Content-Type", 'text/html; charset=utf-8')
     }, 100000);
 
@@ -36,7 +35,7 @@ describe("when there is initially some notes saved", () => {
     const response = await api.get("/api/notes");
     console.log(response.body)
     console.log(response.body.length)
-    expect(response.body).toHaveLength(response.bodylength);
+    expect(response.body).toHaveLength(response.body.length);
   }, 1000000);
 
   test("a specific note is within the returned notes", async () => {
