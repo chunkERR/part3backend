@@ -83,7 +83,7 @@ test('a specific note can be viewed', async () => {
   expect(resultBlog.body).toEqual(blogToView)
 })
 
-test('a note can be deleted', async () => {
+test('a blog can be deleted', async () => {
   const blogsAtStart = await helper.blogsInDb()
   const blogToDelete = blogsAtStart[0]
 
