@@ -11,16 +11,6 @@ const helper = require('./test_helper')
 mongoose.set("bufferTimeoutMS", 30000);
 jest.setTimeout(10000); // 10 second timeout
 
-beforeAll(async () => {  
-  await mongoose.connect(config.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-});
-
-afterAll(async () => {
-  await mongoose.disconnect();
-});
 
 test('blogs are returned as JSON', async () => {
   await api
@@ -42,7 +32,7 @@ test('a specific blog is within the returned notes', async () => {
 });
 
   
-  test('a valid blog can be added ', async () => {
+  test('a valid blog can be added', async () => {
     const newBlog = {
       title: 'async/await simplifies making async calls',    
       author: "Martynka",
