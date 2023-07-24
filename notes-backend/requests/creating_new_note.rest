@@ -1,8 +1,9 @@
 POST http://localhost:3001/api/notes 
 Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ
 
 {
-    "content": "one more test of the user", 
+    "content": "using token", 
     "important": true,
     "userId": "64ba32788bd07bf615a21ef4"
 }
