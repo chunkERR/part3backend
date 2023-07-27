@@ -7,22 +7,8 @@ loginRouter.post('/', async (request, response) => {
   try {
     const { username, password } = request.body
 
-    if (!username) {
-      // If the username is missing or undefined, return an error message
-      return response.status(400).json({ error: 'Please provide a valid username' })
-    }
-
-    if (!password || password.length < 3) {
-      // If the password is missing or too short, return an error message
-      return response.status(400).json({ error: 'Please provide a stronger password' })
-    }
 
     const user = await User.findOne({ username })
-
-    if (!user) {
-      // If the user doesn't exist, return an error message
-      return response.status(401).json({ error: 'Invalid username or password' })
-    }
 
     const passwordCorrect = await bcrypt.compare(password, user.passwordHash)
     if (!passwordCorrect) {
