@@ -15,7 +15,7 @@ usersRouter.post('/', async (request, response) => {
   if (!password) {
     return response.status(400).json({ error: 'Please provide a password' })
   } else if (password.length < 3 ) {
-    return response.status(400).json({ error: 'Please provide a stronger password' })
+    return response.status(400).json({ error: 'Please provide a stronger password (minimum length: 3)' })
   }
 
   const saltRounds = 10
