@@ -11,6 +11,15 @@ router.get('/', async (request, response) => {
   response.json(blogs)
 })
 
+router.get('/:id', async (request, response) => {
+  const blog = await Blog.findById(request.params.id)
+  if (blog) {
+    response.json(blog)
+  } else {
+    response.status(404).end()
+  }
+})
+
 router.post('/', userExtractor, async (request, response) => {
   const { title, author, url, likes } = request.body
   const blog = new Blog({
@@ -35,12 +44,32 @@ router.post('/', userExtractor, async (request, response) => {
 })
 
 router.put('/:id', async (request, response) => {
-  const { title, url, author, likes } = request.body
+  try {
+    const blog = request.body;
+    const user = request.user;
 
-  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id,  { title, url, author, likes }, { new: true })
+    console.log(blog)
+    console.log(user)
 
-  response.json(updatedBlog)
-})
+
+    const updatedBlog = await Blog.findByIdAndUpdate(
+      request.params.id,
+      blog,
+      user,
+      { new: true }
+    );
+    console.log('Updated Blog:', updatedBlog);
+
+    if (!updatedBlog) {
+      return response.status(404).json({ error: 'Blog not found' });
+    }
+
+    response.json(updatedBlog);
+  } catch (error) {
+    console.error('Error updating blog:', error);
+    response.status(500).json({ error: 'An error occurred while updating the blog' });
+  }
+});
 
 router.delete('/:id', userExtractor, async (request, response) => {
   const blog = await Blog.findById(request.params.id)
