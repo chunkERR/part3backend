@@ -43,13 +43,14 @@ router.post('/', userExtractor, async (request, response) => {
   response.status(201).json(createdBlog)
 })
 
-router.put('/:id', async (request, response) => {
+router.put('/:id', userExtractor, async (request, response) => {
   try {
     const blog = request.body;
+    const user = request.user
     
     const updatedBlog = await Blog.findByIdAndUpdate(
       request.params.id,
-      blog,
+      {...blog, user },
       { new: true }
     );
     console.log('Updated Blog:', updatedBlog);
@@ -64,41 +65,6 @@ router.put('/:id', async (request, response) => {
     response.status(500).json({ error: 'An error occurred while updating the blog' });
   }
 });
-
-
-router.put('/:id', async (request, response, next) => {
-  const body = request.body
-
-  if (!body.likes) {
-      body.likes = 0
-  }
-
-  const token = request.token
-  const decodedToken = jwt.verify(token, process.env.SECRET)
-  const user = await User.findById(decodedToken.id)
-
-  const blogToUpdate = await Blog.findById(request.params.id)
-
-  if ( blogToUpdate.user._id.toString() === user._id.toString() ) {
-      const blog = {
-          title: body.title,
-          author: body.author,
-          url: body.url,
-          likes: body.likes,
-      }
-
-      try {
-          const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
-          logger.info(`blog ${blog.title} successfully updated`)
-          response.json(updatedBlog.toJSON())
-      } catch (exception) {
-          next(exception)
-      }
-  } else {
-      return response.status(401).json({ error: `Unauthorized` })
-  }
-})
-
 
 router.delete('/:id', userExtractor, async (request, response) => {
   const blog = await Blog.findById(request.params.id)
