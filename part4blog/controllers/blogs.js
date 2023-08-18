@@ -22,10 +22,12 @@ router.get('/:id', async (request, response) => {
 })
 
 router.post('/', userExtractor, async (request, response) => {
-  const { title, author, url, likes } = request.body
+  const { title, author, url, likes, } = request.body
   const blog = new Blog({
-    title, author, url, 
-    likes: likes ? likes : 0
+    title, 
+    author, 
+    url, 
+    likes: likes ? likes : 0,
   })
 
   const user = request.user
@@ -36,11 +38,14 @@ router.post('/', userExtractor, async (request, response) => {
 
   blog.user = user._id
 
-  const createdBlog = await blog.save()
-
+  let createdBlog = await blog.populate("user", { name: 1 })
+  createdBlog = await blog.save()
   user.blogs = user.blogs.concat(createdBlog._id)
   await user.save()
 
+
+  console.log("blog saved by ", user.name)
+  console.log("saved blog is", createdBlog)
   response.status(201).json(createdBlog)
 })
 
@@ -51,9 +56,10 @@ router.put('/:id', userExtractor, async (request, response) => {
     
     const updatedBlog = await Blog.findByIdAndUpdate(
       request.params.id,
-      {...blog, user },
+      {...blog, },
       { new: true }
     );
+
     console.log('Updated Blog:', updatedBlog);
 
     if (!updatedBlog) {
@@ -79,8 +85,7 @@ router.delete('/:id', userExtractor, async (request, response) => {
   user.blogs = user.blogs.filter(b => b.toString() !== blog.id.toString() )
 
   await user.save()
-  await blog.remove()
-  
+  await Blog.findByIdAndRemove(request.params.id)
   response.status(204).end()
 })
 
