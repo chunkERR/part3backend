@@ -56,7 +56,7 @@ router.put('/:id', userExtractor, async (request, response) => {
     
     const updatedBlog = await Blog.findByIdAndUpdate(
       request.params.id,
-      {...blog, },
+      {...blog},
       { new: true }
     );
 
