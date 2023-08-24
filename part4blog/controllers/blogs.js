@@ -51,12 +51,11 @@ router.post('/', userExtractor, async (request, response) => {
 
 router.put('/:id', userExtractor, async (request, response) => {
   try {
-    const blog = request.body;
-    const user = request.user
+    const {title, url, author, likes} = request.body;
     
     const updatedBlog = await Blog.findByIdAndUpdate(
       request.params.id,
-      {...blog},
+      {title, url, author, likes},
       { new: true }
     );
 
