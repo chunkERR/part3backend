@@ -77,7 +77,7 @@ router.delete('/:id', userExtractor, async (request, response) => {
 
   const user = request.user
 
-  if (!user || blog.user.toString() !== user.id.toString()) {
+  if (!user || !blog.user || blog.user.toString() !== user.id.toString()) {
     return response.status(401).json({ error: 'operation not permitted' })
   }
 
