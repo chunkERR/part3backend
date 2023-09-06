@@ -17,7 +17,6 @@ if (process.env.NODE_ENV === 'test') {
 
 const middleware = require('./utils/middleware')
 
-
 mongoose.set('strictQuery', false)
 
 logger.info('connecting to', config.MONGODB_URI)

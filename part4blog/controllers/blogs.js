@@ -11,23 +11,11 @@ router.get('/', async (request, response) => {
   response.json(blogs)
 })
 
-router.get('/:id', async (request, response) => {
-  const blog = await Blog.findById(request.params.id)
-  .populate('user', { username: 1, name: 1 })
-  if (blog) {
-    response.json(blog)
-  } else {
-    response.status(404).end()
-  }
-})
-
 router.post('/', userExtractor, async (request, response) => {
-  const { title, author, url, likes, } = request.body
+  const { title, author, url, likes } = request.body
   const blog = new Blog({
-    title, 
-    author, 
-    url, 
-    likes: likes ? likes : 0,
+    title, author, url, 
+    likes: likes ? likes : 0
   })
 
   const user = request.user
@@ -38,53 +26,40 @@ router.post('/', userExtractor, async (request, response) => {
 
   blog.user = user._id
 
-  let createdBlog = await blog.populate("user", { name: 1 })
-  createdBlog = await blog.save()
+  let createdBlog = await blog.save()
+
   user.blogs = user.blogs.concat(createdBlog._id)
   await user.save()
 
+  createdBlog = await Blog.findById(createdBlog._id).populate('user') 
 
-  console.log("blog saved by ", user.name)
-  console.log("saved blog is", createdBlog)
   response.status(201).json(createdBlog)
 })
 
-router.put('/:id', userExtractor, async (request, response) => {
-  try {
-    const {title, url, author, likes} = request.body;
-    
-    const updatedBlog = await Blog.findByIdAndUpdate(
-      request.params.id,
-      {title, url, author, likes},
-      { new: true }
-    );
+router.put('/:id', async (request, response) => {
+  const { title, url, author, likes } = request.body
 
-    console.log('Updated Blog:', updatedBlog);
+  let updatedBlog = await Blog.findByIdAndUpdate(request.params.id,  { title, url, author, likes }, { new: true })
 
-    if (!updatedBlog) {
-      return response.status(404).json({ error: 'Blog not found' });
-    }
+  updatedBlog = await Blog.findById(updatedBlog._id).populate('user') 
 
-    response.json(updatedBlog);
-  } catch (error) {
-    console.error('Error updating blog:', error);
-    response.status(500).json({ error: 'An error occurred while updating the blog' });
-  }
-});
+  response.json(updatedBlog)
+})
 
 router.delete('/:id', userExtractor, async (request, response) => {
   const blog = await Blog.findById(request.params.id)
 
   const user = request.user
 
-  if (!user || !blog.user || blog.user.toString() !== user.id.toString()) {
+  if (!user || blog.user.toString() !== user.id.toString()) {
     return response.status(401).json({ error: 'operation not permitted' })
   }
 
   user.blogs = user.blogs.filter(b => b.toString() !== blog.id.toString() )
 
   await user.save()
-  await Blog.findByIdAndRemove(request.params.id)
+  await blog.remove()
+  
   response.status(204).end()
 })
 
